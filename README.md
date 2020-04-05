@@ -7,7 +7,7 @@ Low-entropy areas can then be targeted by your favorite compression tool.
 ### Dependencies
 
 - Python 3
-- Python packages:
+- Python packages (`pip install`):
   - `tqdm`
   - `plotly`
   - `jinja2`

@@ -2,14 +2,18 @@
 from pathlib import Path
 import logging
 import sys
+import argparse
 
-from .treemap import EntropyTreeMap
+import webview
+from jinja2 import Template
+
+from .treemap import AnalysisTreeMap
+from .analyzers import ANALYSES
 
 logger = logging.getLogger()
 
 
-import webview
-from jinja2 import Template
+# TODO: add option to pass local path to plotly.js
 
 # HTML_TEMPLATE = Path("template.jinja2").read_text()
 HTML_TEMPLATE = r"""
@@ -49,8 +53,7 @@ HTML_TEMPLATE = r"""
 """
 
 
-def get_args():
-    import argparse
+def argument_parser() -> argparse.ArgumentParser:
 
     script_name = Path(sys.argv[0]).name
     if script_name == '__main__.py':
@@ -62,10 +65,9 @@ def get_args():
 
     parser.add_argument("scan_path", help="Path for which the entropy treemap will be generated", type=Path)
     parser.add_argument("-e", "--export", help="Save as HTML file..", type=Path)
+    parser.add_argument("-a", "--analysis", help="Analysis to run", choices=ANALYSES.keys())
 
-    args = parser.parse_args()
-
-    return args
+    return parser
 
 
 def gen_entropy_treemap(base_path: Path):
@@ -74,14 +76,14 @@ def gen_entropy_treemap(base_path: Path):
     if not base_path.is_dir():
         raise ValueError("Base path is expected to be a directory", base_path)
 
-    etm = EntropyTreeMap.from_directory(
+    etm = AnalysisTreeMap.from_directory(
         base_path
     )
     tm = Template(
         HTML_TEMPLATE
     )
     html_text = tm.render(
-        test=etm.entropy_treemap()
+        test=etm.property_treemap()
     )
 
     return html_text
@@ -127,7 +129,9 @@ def save_entropy_treemap(base_path: Path, target_path: Path):
 
 
 def main():
-    args = get_args()
+    parser = argument_parser()
+    args = parser.parse_args()
+
     logging.debug(args)
     if args.export:
         save_entropy_treemap(args.scan_path, args.export)
@@ -136,5 +140,4 @@ def main():
 
 
 if __name__ == '__main__':
-    import sys
     sys.exit(main())
