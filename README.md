@@ -1,10 +1,10 @@
-# Entropy Tree Map
+# Analysis Tree Map
 
-This Python package generates interactive treemap graphs, containing entropy information.
+This Python package generates interactive treemap graphs, detailing filesystem analyses.
 
 Low-entropy areas can then be targeted by your favorite compression tool.
 
-### Dependencies
+### Requirements
 
 - Python 3
 - Python packages (`pip install`):
@@ -13,6 +13,6 @@ Low-entropy areas can then be targeted by your favorite compression tool.
   - `jinja2`
   - `pywebview`
 
-This is a simple example package. You can use
-[Github-flavored Markdown](https://guides.github.com/features/mastering-markdown/)
-to write your content.
+### Usage
+
+`python -m etreemap <path>`

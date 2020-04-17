@@ -8,13 +8,12 @@ from collections import Counter
 from pathlib import Path
 
 from .analyzer import IPathPropertyAnalysis
+from . import register_analysis
 
 
 class EntropyCalculator(IPathPropertyAnalysis):
 
-    @property
-    def name(self):
-        return 'entropy'
+    name = 'entropy'
 
     @staticmethod
     def entropy_estimate(data: bytes) -> float:
@@ -58,3 +57,6 @@ class EntropyCalculator(IPathPropertyAnalysis):
 
     def calculate_file(self, file_path: Path) -> float:
         return self.entropy_estimate(file_path.read_bytes())
+
+
+register_analysis(EntropyCalculator)

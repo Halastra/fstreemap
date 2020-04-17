@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from pathlib import Path
-from typing import Mapping
+from typing import Mapping, Type
 from tqdm import tqdm
 
 from ..loggers import LoggingHandler
@@ -19,6 +19,13 @@ class IPathAnalysis(Mapping, LoggingHandler):
         self.logger.info("Initializing %s analysis for %s", self.name, base_directory)
         self.base_directory = base_directory
 
+        # TODO: consider using pyfilesystem for filesystem recursion (e.g. inspecting files in zip archives)
+        #  https://github.com/PyFilesystem/pyfilesystem2
+        #  Maybe use MountFS? https://docs.pyfilesystem.org/en/latest/reference/mountfs.html
+        #  - Create a dictionary to map file paths into mounted filesystems
+        #  - That way you can track of which files are mounted archives, and optionally ignore them as files
+        #  - Probably a good idea to put all of this logic as a filesystem using pyfilesystem's API
+        #  Otherwise, dynamically mount/unmount with context manager
         self._keys = list(base_directory.glob('**/*'))
         self._mapping = dict()
 
@@ -107,7 +114,7 @@ class IPathPropertyAnalysis(IPathAnalysis):
     Directories are calculated as a weighted average of the underlying items.
     """
 
-    def __init__(self, base_directory: Path, value_analysis_class: type(IPathValueAnalysis)):
+    def __init__(self, base_directory: Path, value_analysis_class: Type[IPathValueAnalysis]):
         self.value_analysis = value_analysis_class(base_directory)
 
         super().__init__(base_directory)

@@ -4,15 +4,19 @@ Duplicate calculations
 
 from pathlib import Path
 from hashlib import sha256
+from typing import Type
 
 from tqdm import tqdm
 
 from .analyzer import IPathPropertyAnalysis, IPathValueAnalysis
+from . import register_analysis
 
 
 class DuplicateFinder(IPathPropertyAnalysis):
 
-    def __init__(self, base_directory: Path, value_analyzer: IPathValueAnalysis):
+    name = 'duplicates'
+
+    def __init__(self, base_directory: Path, value_analyzer: Type[IPathValueAnalysis]):
 
         super().__init__(base_directory, value_analyzer)
 
@@ -46,6 +50,5 @@ class DuplicateFinder(IPathPropertyAnalysis):
     def calculate_file(self, file_path: Path) -> float:
         return 1 if len(self.collision_dict[file_path]) > 1 else 0
 
-    @property
-    def name(self):
-        return 'duplicates'
+
+register_analysis(DuplicateFinder)

@@ -12,7 +12,7 @@ TODO:
 
 from pathlib import Path
 
-from typing import Optional, Mapping
+from typing import Optional, Mapping, Type
 
 import plotly
 import plotly.graph_objs as go
@@ -52,8 +52,8 @@ class AnalysisTreeMap(LoggingHandler):
     def from_directory(
             cls, 
             base_directory: Path,
-            value_analyzer_class: type(IPathValueAnalysis) = FileSizeAnalyzer,
-            property_analyzer_class: type(IPathPropertyAnalysis) = DuplicateFinder
+            value_analyzer_class: Type[IPathValueAnalysis] = FileSizeAnalyzer,
+            property_analyzer_class: Type[IPathPropertyAnalysis] = DuplicateFinder
     ):
         # TODO: make value analyzer a part of property analyzer
         #  so that it maintains the consistency between them
@@ -95,8 +95,8 @@ class AnalysisTreeMap(LoggingHandler):
                     title='Entropy',
                     titleside='top',
                     tickmode='array',
-                    tickvals=[0.0, 0.50, 1.00],
-                    ticktext=['Low', 'Mid', 'High'],
+                    tickvals=[0.0, 0.1, 0.8, 0.95, 1.0],
+                    ticktext=['Low', 'Text', 'Code', 'Compressed', 'Encrypted'],
                     ticks='outside'
                 )
             )
