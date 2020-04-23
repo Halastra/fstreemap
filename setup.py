@@ -5,11 +5,11 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="etree-Halastra",
+    name="fstreemap-Halastra",
     version="0.0.1",
     author="Or Barzilay",
     author_email="turchy@gmail.com",
-    description="Interactive analysis treemaps for filesystems",
+    description="Interactive filesystem treemaps",
     long_description=long_description,
     long_description_content_type="text/markdown",
     # url="https://github.com/pypa/sampleproject",
@@ -29,10 +29,7 @@ setuptools.setup(
 
     entry_points={
         "console_scripts": [
-            "etreemap = etreemap.__main__:main",
+            "fstreemap = fstreemap.__main__:main",
         ],
-        # "gui_scripts": [
-        #     "bar = etreemap:main",
-        # ]
     }
 )
