@@ -15,4 +15,4 @@ Low-entropy areas can then be targeted by your favorite compression tool.
 
 ### Usage
 
-`python -m etreemap <path>`
+`python -m fstreemap <path>`
