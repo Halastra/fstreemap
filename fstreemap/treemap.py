@@ -20,7 +20,6 @@ import plotly.graph_objs as go
 from .analyzers.analyzer import IPathValueAnalysis
 from .analyzers.analyzer import IPathPropertyAnalysis
 from .analyzers.entropy import EntropyCalculator
-from .analyzers.duplicates import DuplicateFinder
 from .analyzers.filesize import FileSizeAnalyzer
 from .loggers import LoggingHandler
 
@@ -35,35 +34,34 @@ except ImportError:
         yield from x
 
 # https://plotly.com/python/builtin-colorscales/
-ENTROPY_COLOR_SCALE = 'OrRd'
+COLOR_SCALE = 'OrRd'
 
 
 class AnalysisTreeMap(LoggingHandler):
 
-    def __init__(self, location_name: Path, value_dict: Mapping[Path, int], property_dict: Mapping[Path, float], *args,
-                 **kwargs):
+    def __init__(
+            self,
+            location_name: Path,
+            value_analysis: IPathValueAnalysis,
+            property_analysis: IPathPropertyAnalysis,
+            *args,
+            **kwargs
+    ):
         
         super().__init__(*args, **kwargs)
         self.base_path = location_name
-        self.value_dict = value_dict
-        self.property_dict = property_dict
+        self.value_analysis = value_analysis
+        self.property_analysis = property_analysis
     
     @classmethod
     def from_directory(
             cls, 
             base_directory: Path,
             value_analyzer_class: Type[IPathValueAnalysis] = FileSizeAnalyzer,
-            property_analyzer_class: Type[IPathPropertyAnalysis] = DuplicateFinder
+            property_analyzer_class: Type[IPathPropertyAnalysis] = EntropyCalculator
     ):
-        # TODO: make value analyzer a part of property analyzer
-        #  so that it maintains the consistency between them
-        #  and provides value information when AnalysisTreeMap needs it
         # logger.info("Loading treemap instance for %s", base_directory)
-        property_analyzer = (
-            property_analyzer_class(base_directory, value_analyzer_class)
-            if property_analyzer_class
-            else None
-        )
+        property_analyzer = property_analyzer_class(base_directory, value_analyzer_class)
 
         return cls(
             base_directory,
@@ -75,28 +73,31 @@ class AnalysisTreeMap(LoggingHandler):
     def generate_analysis_treemap(
         cls, 
         location_name: Path, 
-        value_dict: Mapping,
-        entropy_dict: Optional[Mapping]
+        value_dict: IPathValueAnalysis,
+        property_dict: Optional[IPathPropertyAnalysis],
+        max_depth: int = 4,
     ):
 
         # logger.info("Generating treemap plot")
         file_id_list = [f'{i.absolute()}' for i in value_dict]
 
-        if entropy_dict:
+        tickvals, ticktext = zip(*property_dict.ticks().items())
+
+        if property_dict:
             markers_dict = dict(
-                colors=[entropy_dict[i] for i in tqdm(value_dict)],
+                colors=[property_dict[i] for i in tqdm(value_dict)],
                 showscale=True,
 
-                colorscale=ENTROPY_COLOR_SCALE,
+                colorscale=COLOR_SCALE,
                 cmin=0,
                 cmax=1,
                 # cmax=max(entropy_dict.values()),
                 colorbar=dict(
-                    title='Entropy',
+                    title=f'{property_dict.name}'.capitalize(),
                     titleside='top',
                     tickmode='array',
-                    tickvals=[0.0, 0.1, 0.8, 0.95, 1.0],
-                    ticktext=['Low', 'Text', 'Code', 'Compressed', 'Encrypted'],
+                    tickvals=tickvals,
+                    ticktext=ticktext,
                     ticks='outside'
                 )
             )
@@ -115,13 +116,17 @@ class AnalysisTreeMap(LoggingHandler):
                 # pad={
                     # 't': 0,
                     # },
-                maxdepth=4,
+                maxdepth=max_depth,
             ),
             ]
 
+        title = (
+                f"{property_dict.name} treemap for ({location_name})"
+        ).capitalize()
+
         # Set graph layout:
         layout = go.Layout(
-                title="Entropy treemap for (%s)" % (location_name, ),
+                title=title,
                 autosize=True,
                 )
 
@@ -130,9 +135,10 @@ class AnalysisTreeMap(LoggingHandler):
 
         # logger.info('Plotting graph')
 
-        div_data = plotly.offline.plot({
-            "data": plot_data,
-            "layout": layout,
+        div_data = plotly.offline.plot(
+            {
+                "data": plot_data,
+                "layout": layout,
             },
             output_type='div',
             config=dict(responsive=True),
@@ -147,6 +153,6 @@ class AnalysisTreeMap(LoggingHandler):
         self.logger.info("Generating treemap plot")
         return self.generate_analysis_treemap(
             self.base_path,
-            self.value_dict,
-            self.property_dict
+            self.value_analysis,
+            self.property_analysis
         )

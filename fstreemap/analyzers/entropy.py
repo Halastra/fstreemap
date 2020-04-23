@@ -6,12 +6,23 @@ import math
 import zlib
 from collections import Counter
 from pathlib import Path
+from typing import Mapping
 
 from .analyzer import IPathPropertyAnalysis
 from . import register_analysis
 
 
 class EntropyCalculator(IPathPropertyAnalysis):
+
+    @classmethod
+    def ticks(cls) -> Mapping[float, str]:
+        return {
+            0.0: 'Low',
+            0.1: 'Text',
+            0.8: 'Code',
+            0.95: 'Compressed',
+            1.0: 'Encrypted'
+        }
 
     name = 'entropy'
 

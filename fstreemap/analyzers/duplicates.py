@@ -4,7 +4,7 @@ Duplicate calculations
 
 from pathlib import Path
 from hashlib import sha256
-from typing import Type
+from typing import Type, Mapping
 
 from tqdm import tqdm
 
@@ -14,7 +14,14 @@ from . import register_analysis
 
 class DuplicateFinder(IPathPropertyAnalysis):
 
-    name = 'duplicates'
+    @classmethod
+    def ticks(cls) -> Mapping[float, str]:
+        return {
+            0.0: 'Unique',
+            1.0: 'Redundant'
+        }
+
+    name = 'redundancy'
 
     def __init__(self, base_directory: Path, value_analyzer: Type[IPathValueAnalysis]):
 

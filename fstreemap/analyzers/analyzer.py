@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from pathlib import Path
-from typing import Mapping, Type
+from typing import Mapping, Type, Iterable, Tuple
 from tqdm import tqdm
 
 from ..loggers import LoggingHandler
@@ -133,4 +133,9 @@ class IPathPropertyAnalysis(IPathAnalysis):
 
     @abstractmethod
     def calculate_file(self, file_path: Path) -> float:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def ticks(cls) -> Mapping[float, str]:
         pass
