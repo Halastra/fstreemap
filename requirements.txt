@@ -2,3 +2,4 @@ plotly
 jinja2
 tqdm
 pywebview
+ssdeep
