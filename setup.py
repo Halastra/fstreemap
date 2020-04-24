@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="fstreemap-Halastra",
-    version="0.0.1",
+    name="fstreemap",
+    version="0.0.2",
     author="Or Barzilay",
     author_email="turchy@gmail.com",
     description="Interactive filesystem treemaps",
