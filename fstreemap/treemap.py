@@ -12,7 +12,7 @@ TODO:
 
 from pathlib import Path
 
-from typing import Optional, Mapping, Type
+from typing import Optional, Type
 
 import plotly
 import plotly.graph_objs as go
@@ -113,9 +113,6 @@ class AnalysisTreeMap(LoggingHandler):
                 values=[value_dict[i] for i in tqdm(value_dict)],
                 marker=markers_dict,
                 branchvalues='total',
-                # pad={
-                    # 't': 0,
-                    # },
                 maxdepth=max_depth,
             ),
             ]

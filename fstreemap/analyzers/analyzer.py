@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from pathlib import Path
-from typing import Mapping, Type, Iterable, Tuple
+from typing import Mapping, Type
 from tqdm import tqdm
 
 from ..loggers import LoggingHandler
@@ -13,7 +13,7 @@ class IPathAnalysis(Mapping, LoggingHandler):
     def name(self):
         pass
 
-    def __init__(self, base_directory: Path, lazy: bool = True):
+    def __init__(self, base_directory: Path):
         super().__init__()
 
         self.logger.info("Initializing %s analysis for %s", self.name, base_directory)

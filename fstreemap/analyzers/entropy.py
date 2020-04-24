@@ -59,8 +59,8 @@ class EntropyCalculator(IPathPropertyAnalysis):
 
         ent = 0
 
-        probs = [float(c) / len(data) for c in counts.values()]
-        for p in probs:
+        probabilities = [float(c) / len(data) for c in counts.values()]
+        for p in probabilities:
             if p > 0.:
                 ent -= p * math.log(p, base[unit])
 
